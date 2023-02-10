@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:project2/application/search/search_bloc.dart';
 import 'package:project2/core/colors/colors.dart';
 import 'package:project2/core/constands.dart';
 import 'package:project2/presentataion/search/widgets/title.dart';
@@ -20,11 +22,33 @@ class searchidlewidget extends StatelessWidget {
         searchtexttitle(title: "Top Searches"),
         kheight,
         Expanded(
-          child: ListView.separated(
-              shrinkWrap: true,
-              itemBuilder: (ctx, index) => topsearchtitle(),
-              separatorBuilder: (ctx, index) => kheight20,
-              itemCount: 10),
+          child: BlocBuilder<SearchBloc, SearchState>(
+            builder: (context, state) {
+              if (state.isLoading) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              } else if (state.isError) {
+                return const Center(
+                  child: Text('Error while getting data'),
+                );
+              } else if (state.idleList.isEmpty) {
+                return const Center(
+                  child: Text('list is emplty'),
+                );
+              }
+              return ListView.separated(
+                  shrinkWrap: true,
+                  itemBuilder: (ctx, index) {
+                    final movie = state.idleList[index];
+                    return topsearchtitle(
+                        title: movie.title ?? 'no title provided',
+                        imageurl: "$imageappendurl${movie.posterPath}");
+                  },
+                  separatorBuilder: (ctx, index) => kheight20,
+                  itemCount: state.idleList.length);
+            },
+          ),
         )
       ],
     );
@@ -32,7 +56,10 @@ class searchidlewidget extends StatelessWidget {
 }
 
 class topsearchtitle extends StatelessWidget {
-  const topsearchtitle({super.key});
+  final String title;
+  final String imageurl;
+  const topsearchtitle(
+      {super.key, required this.title, required this.imageurl});
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +79,7 @@ class topsearchtitle extends StatelessWidget {
         kwidth,
         Expanded(
           child: Text(
-            'Movie Name',
+            title,
             style: TextStyle(
               color: kwhitecolor,
               fontWeight: FontWeight.bold,

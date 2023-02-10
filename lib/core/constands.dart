@@ -22,3 +22,4 @@ TextStyle khometitletext =
     const TextStyle(fontSize: 14, fontWeight: FontWeight.bold);
 // TextStyle khotnewdate =
 //     const TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+const imageappendurl = 'https://image.tmdb.org/t/p/w500';
